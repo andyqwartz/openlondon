@@ -32,11 +32,37 @@
   <div class="search-results" id="searchResults"></div>
 </div>
 
-<!-- Barre du bas : toggles couches + compteurs (style tfljamcams) -->
+<!-- Barre du bas : gauche Carte + centre statut + droite toggles (structure OpenLiDAR) -->
 <footer class="bottom-bar">
+  <div class="bottom-chip layer-select layer-select--left">
+    <span>Carte:</span>
+    <select id="baseSelect"></select>
+  </div>
+
+  <div class="bottom-center">
+    <div class="bottom-chip bottom-status">
+      <div id="scaleSlot" class="status-scale"></div>
+      <div class="status-divider" aria-hidden="true"></div>
+      <div class="status-metrics">
+        <div class="status-metric">
+          <span class="status-label">Coords</span>
+          <strong id="coordDisplay" class="status-value">---</strong>
+        </div>
+        <div class="status-metric">
+          <span class="status-label">Zoom</span>
+          <strong id="zoomDisplay" class="status-value">---</strong>
+        </div>
+        <div class="status-metric">
+          <span class="status-label">Caméras</span>
+          <strong id="camCount" class="status-value">—</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="bottom-chip toggle-chip">
     <button type="button" class="toggle-btn active" id="btn-cameras" title="Afficher/masquer les caméras">
-      <img src="assets/icons/cams.png" alt="Caméras"><span>Caméras</span><strong id="camCount" class="cnt">—</strong>
+      <img src="assets/icons/cams.png" alt="Caméras"><span>Caméras</span>
     </button>
     <button type="button" class="toggle-btn" id="btn-incidents" title="Afficher/masquer les incidents">
       <img src="assets/icons/incidents.png" alt="Incidents"><span>Incidents</span><strong id="incCount" class="cnt">—</strong>
@@ -46,11 +72,6 @@
     </button>
     <span class="toggle-sep"></span>
     <button type="button" class="toggle-btn feed-btn" id="btn-feed" title="Basculer image / vidéo">🖼 Image</button>
-    <span class="toggle-sep"></span>
-    <label class="base-lbl" title="Fond de carte">
-      <span class="base-txt">Carte:</span>
-      <select id="baseSelect"></select>
-    </label>
   </div>
 </footer>
 
