@@ -70,7 +70,7 @@ OL.TOOLS.init = function() {
     OL.toggleTraffic(!OL.visibleTraffic); e.preventDefault();
   });
   bind('btn-transport', function() {
-    OL.UI.togglePanel('transportPanel', 'btn-transport', OL.Transport.refreshActive);
+    OL.UI.togglePanel('transportPanel', 'btn-transport', OL.Transport.checkCells);
   });
   bind('btn-bookmarks', function() {
     OL.Bookmarks.togglePanel();

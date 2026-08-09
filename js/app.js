@@ -10,13 +10,18 @@ OL.init = function() {
   OL.URLSync.init();
   OL.Screenshot.init();
 
-  // Charger les données (caméras + trafic discret + refresh sur déplacement)
+  // Charger les données (caméras 882 + trafic 106)
   OL.Cameras.fetchAll();
   OL.Traffic.fetch();
 
-  // Recharger le transport actif quand on se déplace trop loin
+  // Anti-429 : ne vérifier les cellules transport qu'après un vrai déplacement,
+  // avec debounce. Jamais un batch de refetch à chaque pan.
+  var cellTimer = null;
   OL.map.on('moveend', function() {
-    OL.Transport.refreshActive();
+    clearTimeout(cellTimer);
+    cellTimer = setTimeout(function() {
+      OL.Transport.checkCells();
+    }, 1200);
   });
 };
 

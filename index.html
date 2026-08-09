@@ -2,94 +2,133 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenLondon — Caméras & trafic Londres</title>
-  <link rel="icon" href="favicon.ico">
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="OpenLondon — Caméras de trafic, trafic et transport de Londres en temps réel. Viewer relif + mobilité (TfL), open source, sans compte ni clé API.">
+  <title>OpenLondon · Caméras & trafic Londres</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OpenLondon">
+  <meta property="og:title" content="OpenLondon · Caméras & trafic Londres">
+  <meta property="og:description" content="Caméras TfL, trafic, transport et relief de Londres, en temps réel. Open source, sans clé.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@2.4.0/Control.FullScreen.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
 </head>
 <body>
-  <div id="map"></div>
 
-  <div class="search-wrap">
-    <div class="search-row">
-      <input id="searchInput" placeholder="Rechercher à Londres (station, rue, quartier, coords)…" autocomplete="off">
-      <button id="searchBtn" type="button">Chercher</button>
-    </div>
-    <div class="search-results" id="searchResults"></div>
+<div id="map"></div>
+
+<div class="search-wrap">
+  <div class="search-row">
+    <input id="searchInput" placeholder="Rechercher à Londres (station, rue, quartier, coords)..." autocomplete="off">
+    <button id="searchBtn" type="button">Chercher</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<footer class="bottom-bar">
+  <div class="bottom-chip layer-select layer-select--left">
+    <span>Carte:</span>
+    <select id="baseSelect"></select>
   </div>
 
-  <div id="toolbar">
-    <button id="btn-cameras" type="button" class="active" title="Caméras TfL">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="4.5"/><path d="M12 8v.5"/></svg>
-    </button>
-    <button id="btn-traffic" type="button" title="Trafic / incidents">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 17c1.5 2 4 2 5.5 0s4-2 5.5 0 4 2 5.5 0M4 12c1.5 2 4 2 5.5 0s4-2 5.5 0 4 2 5.5 0M4 7c1.5 2 4 2 5.5 0s4-2 5.5 0 4 2 5.5 0"/></svg>
-    </button>
-    <button id="btn-transport" type="button" title="Transport (bus, métro, rail)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="3" width="14" height="11" rx="2"/><path d="M5 10h14M8.5 14v3M15.5 14v3M7 20h2M15 20h2"/><circle cx="9" cy="14.5" r="0.5" fill="currentColor"/><circle cx="15" cy="14.5" r="0.5" fill="currentColor"/></svg>
-    </button>
-    <span class="sep"></span>
-    <label class="base-lbl" title="Fond de carte">
-      <select id="baseSelect"></select>
-    </label>
-    <span class="sep"></span>
-    <button id="btn-bookmarks" type="button" title="Lieux">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h12v18l-6-5-6 5V3z"/></svg>
-    </button>
-    <button id="btn-geoloc" type="button" title="Position">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-    </button>
-    <button id="btn-export" type="button" title="Exporter en PNG">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-    </button>
-    <button id="btn-reset" type="button" title="Reset vue">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10a8 8 0 1 1-1 4M4 4v6h6"/></svg>
-    </button>
-  </div>
-
-  <footer class="bottom-bar">
-    <div class="bottom-center">
-      <div class="bottom-chip bottom-status">
-        <div id="scaleSlot" class="status-scale"></div>
-        <div class="status-divider" aria-hidden="true"></div>
-        <div class="status-metrics">
-          <div class="status-metric"><span class="status-label">Coords</span><strong id="coordDisplay" class="status-value">---</strong></div>
-          <div class="status-metric"><span class="status-label">Zoom</span><strong id="zoomDisplay" class="status-value">---</strong></div>
-          <div class="status-metric"><span class="status-label">Caméras</span><strong id="camCount" class="status-value">—</strong></div>
+  <div class="bottom-center">
+    <div class="bottom-chip bottom-status">
+      <div id="scaleSlot" class="status-scale"></div>
+      <div class="status-divider" aria-hidden="true"></div>
+      <div class="status-metrics">
+        <div class="status-metric">
+          <span class="status-label">Coords</span>
+          <strong id="coordDisplay" class="status-value">---</strong>
+        </div>
+        <div class="status-metric">
+          <span class="status-label">Zoom</span>
+          <strong id="zoomDisplay" class="status-value">---</strong>
+        </div>
+        <div class="status-metric">
+          <span class="status-label">Caméras</span>
+          <strong id="camCount" class="status-value">—</strong>
         </div>
       </div>
     </div>
-  </footer>
+  </div>
 
-  <div id="transportPanel" class="side-panel">
-    <div class="panel-header"><span>Transport</span><button class="panel-close" id="tp-close" type="button">✕</button></div>
+  <div class="bottom-chip layer-select layer-select--right">
+    <span>Trafic:</span>
+    <strong id="trafficCount" class="status-value">—</strong>
+  </div>
+</footer>
+
+<div id="toolbar">
+  <button id="btn-cameras" type="button" class="active" title="Caméras TfL">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="4" width="13" height="9" rx="1.5"/><circle cx="8" cy="8.5" r="3"/><path d="M8 5.5v.5"/></svg>
+  </button>
+  <button id="btn-traffic" type="button" title="Trafic / incidents">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="4" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="8" cy="12" r="1.6"/><path d="M5.5 4H3m7.5 0h2.5M5.5 8H3m7.5 0h2.5M5.5 12H3m7.5 0h2.5"/></svg>
+  </button>
+  <button id="btn-transport" type="button" title="Transport (bus, métro, rail)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="6" width="12" height="6" rx="1.5"/><path d="M2 9h12M5 12v1.5M11 12v1.5M6 12h4"/><circle cx="5.5" cy="10" r=".6" fill="currentColor"/><circle cx="10.5" cy="10" r=".6" fill="currentColor"/></svg>
+  </button>
+  <div class="sep"></div>
+  <button id="btn-bookmarks" type="button" title="Lieux">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 1.5h8v13l-4-3.5-4 3.5v-13z"/></svg>
+  </button>
+  <button id="btn-geoloc" type="button" title="Position">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3"/></svg>
+  </button>
+  <div class="sep"></div>
+  <button id="btn-export" type="button" title="Exporter en PNG">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v8M5 7l3 3 3-3M2.5 13h11"/></svg>
+  </button>
+  <button id="btn-reset" type="button" title="Reset vue">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6.5A5.5 5.5 0 0 1 13 7.5M13 9.5A5.5 5.5 0 0 1 3 8.5"/><path d="M2.5 4v3h3M13.5 12V9h-3"/></svg>
+  </button>
+</div>
+
+<div id="transportPanel">
+  <div class="panel-header">
+    <span>Transport</span>
+    <button class="panel-close" id="tp-close" type="button" title="Fermer">&#x2715;</button>
+  </div>
+  <div class="panel-body">
     <div class="transport-list"></div>
-    <div class="panel-hint">Sélectionne les réseaux à afficher sur la carte. Données rechargées autour du centre.</div>
+    <div class="panel-hint">Sélectionne les réseaux à afficher. Données chargées une fois, mises en cache.</div>
   </div>
+</div>
 
-  <div id="bookmarksPanel" class="side-panel">
-    <div class="panel-header"><span>Lieux mémorisés</span><div class="panel-header-actions"><button class="bm-add-btn" id="bm-add-btn" type="button">+ Ajouter</button><button class="panel-close" id="bm-close" type="button">✕</button></div></div>
-    <div id="bookmarksList"></div>
+<div id="bookmarksPanel">
+  <div class="panel-header">
+    <span>Lieux mémorisés</span>
+    <div class="panel-header-actions">
+      <button class="bm-add-btn" id="bm-add-btn" type="button">+ Ajouter</button>
+      <button class="panel-close" id="bm-close" type="button" title="Fermer">&#x2715;</button>
+    </div>
   </div>
+  <div id="bookmarksList"></div>
+</div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-  <script src="js/namespace.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/constants.js"></script>
-  <script src="js/layers.js"></script>
-  <script src="js/map.js"></script>
-  <script src="js/cameras.js"></script>
-  <script src="js/traffic.js"></script>
-  <script src="js/transport.js"></script>
-  <script src="js/search.js"></script>
-  <script src="js/bookmarks.js"></script>
-  <script src="js/urlSync.js"></script>
-  <script src="js/screenshot.js"></script>
-  <script src="js/tools.js"></script>
-  <script src="js/app.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.fullscreen@2.4.0/Control.FullScreen.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="js/namespace.js"></script>
+<script src="js/config.js"></script>
+<script src="js/constants.js"></script>
+<script src="js/layers.js"></script>
+<script src="js/map.js"></script>
+<script src="js/cameras.js"></script>
+<script src="js/traffic.js"></script>
+<script src="js/transport.js"></script>
+<script src="js/search.js"></script>
+<script src="js/bookmarks.js"></script>
+<script src="js/urlSync.js"></script>
+<script src="js/screenshot.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
