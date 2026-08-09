@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenLondon · Sources & données</title>
+  <link rel="stylesheet" href="css/simple.css">
+</head>
+<body>
+<main>
+  <h1>OpenLondon — Sources & données</h1>
+  <p>Viewer de mobilité londonienne **100% client-side**, sans compte ni clé. Toutes les données proviennent d'API publiques.</p>
+
+  <h2>📷 Caméras de trafic TfL</h2>
+  <ul>
+    <li>Endpoints : <code>GET api.tfl.gov.uk/Place/Type/JamCam</code> (~882 caméras)</li>
+    <li>Médias : <code>s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/{id}.jpg|.mp4</code></li>
+    <li>Données © <a href="https://tfl.gov.uk/info-for/open-data-users/" target="_blank" rel="noopener">Transport for London</a> (Open Data)</li>
+  </ul>
+
+  <h2>⚠️ Incidents / disruptions</h2>
+  <ul>
+    <li>Endpoint : <code>GET api.tfl.gov.uk/Road/All/Disruption</code> (~106)</li>
+    <li>Coloration par sévérité : Minor / Moderate / Severe / Closure</li>
+  </ul>
+
+  <h2>🚇 Transport</h2>
+  <ul>
+    <li>Endpoints : <code>GET api.tfl.gov.uk/StopPoint/Mode/{tube|national-rail|dlr|overground|elizabeth-line|tram|bus}</code></li>
+  </ul>
+
+  <h2>🗺 Fond de carte</h2>
+  <ul>
+    <li>OpenStreetMap © OSM contributors</li>
+    <li>Google Satellite / Hybride © Google</li>
+    <li>OpenLiDAR : relief DTM — <a href="https://environment.data.gov.uk/" target="_blank" rel="noopener">Environment Agency</a>, WMS <code>lidar-composite-digital-terrain-model-dtm-1m</code> (OGL v3.0)</li>
+    <li>Esri World Imagery © Esri, Maxar, Earthstar</li>
+    <li>CARTO basemaps © OpenStreetMap © CARTO</li>
+  </ul>
+
+  <p><a href="index.html">← Retour à la carte</a></p>
+</main>
+</body>
+</html>

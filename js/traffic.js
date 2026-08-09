@@ -59,22 +59,36 @@ OL.Traffic.render = function() {
     var sev = d.severity || 'Unknown';
     var color = OL.Traffic.SEVERITY[sev] || OL.Traffic.SEVERITY_DEFAULT;
 
-    var m = L.circleMarker(latlng, {
-      radius: 7,
-      color: color,
-      weight: 2,
-      fillColor: color,
-      fillOpacity: 0.55
+    // Icônes réelles (comme l'original) : roadworks / exclamation / closure
+    var cat = (d.category || '').toLowerCase();
+    var iconName = 'exclamation.png';
+    if (OL.isSat()) iconName = 'exclamation-sat.png';
+    if (cat.indexOf('work') !== -1) iconName = OL.isSat() ? 'roadworks-sat.png' : 'roadworks.png';
+    if (sev === 'Closure') iconName = 'closure-1.png';
+
+    var m = L.marker(latlng, {
+      icon: L.icon({
+        iconUrl: 'assets/icons/' + iconName,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+      }),
+      zIndexOffset: 900
     });
     m.bindPopup(
-      '<div class="dis-pop"><strong>' + OL.esc(sev) + '</strong>' +
-      '<span class="dis-cat">' + OL.esc(d.category || '') + (d.subCategory ? ' · ' + OL.esc(d.subCategory) : '') + '</span>' +
+      '<div class="dis-pop"><span class="dis-sev" style="background:' + color + '">' + OL.esc(sev) + '</span>' +
+      '<div class="dis-cat">' + OL.esc(d.category || '') + (d.subCategory ? ' · ' + OL.esc(d.subCategory) : '') + '</div>' +
       '<div class="dis-comments">' + OL.esc(d.comments || '') + '</div></div>'
     );
     m.addTo(OL.Traffic.layer);
   });
 
+  OL.Traffic.updateCount();
   if (OL.Traffic.visible) OL.Traffic.layer.addTo(OL.map);
+};
+
+OL.Traffic.updateCount = function() {
+  var c = document.getElementById('incCount');
+  if (c) c.textContent = OL.Traffic.data.length;
 };
 
 OL.Traffic._schedule = function() {

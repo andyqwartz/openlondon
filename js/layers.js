@@ -1,12 +1,20 @@
 /* OpenLondon — Registre des fonds de carte + gestion du switch */
 
 OL.BASE_LAYERS = {
-  osm:        { name: 'OSM standard',      tile: 'OSM',        map: null },
-  osmfr:      { name: 'OSM France',        tile: 'OSM_FR',     map: null },
-  imagery:    { name: 'Photo (Esri)',      tile: 'ESRI',       map: null },
-  dark:       { name: 'Sombre (CARTO)',    tile: 'CARTO_DARK', map: null },
-  light:      { name: 'Lumineux (CARTO)',  tile: 'CARTO_LIGHT',map: null },
-  lidar:      { name: 'Relief LiDAR GB',   tile: null,         map: null, lidar: true }
+  osm:      { name: 'OSM standard',    tile: 'OSM',        sat: false, map: null },
+  osmfr:    { name: 'OSM France',      tile: 'OSM_FR',     sat: false, map: null },
+  googlesat:{ name: 'Google Satellite',tile: 'GOOGLE_SAT', sat: true,  map: null },
+  googlehyb:{ name: 'Google Hybride',  tile: 'GOOGLE_HYB', sat: true,  map: null },
+  openlidar:{ name: 'OpenLiDAR (relief GB)', tile: null,   sat: false, map: null, lidar: true },
+  imagery:  { name: 'Photo (Esri)',    tile: 'ESRI',       sat: false, map: null },
+  dark:     { name: 'Sombre (CARTO)',  tile: 'CARTO_DARK', sat: false, map: null },
+  light:    { name: 'Lumineux (CARTO)',tile: 'CARTO_LIGHT',sat: false, map: null }
+};
+
+/** True si le fond actuel est un fond satellite (pour icônes caméras). */
+OL.isSat = function() {
+  var def = OL.BASE_LAYERS[OL.baseKey];
+  return !!(def && def.sat);
 };
 
 /**
@@ -17,14 +25,12 @@ OL.switchBase = function(key) {
   var def = OL.BASE_LAYERS[key];
   if (!def) return;
 
-  // Retire l'ancien fond
   if (OL.baseLayer) {
     OL.map.removeLayer(OL.baseLayer);
     OL.baseLayer = null;
   }
 
   if (def.lidar) {
-    // Relief LiDAR WMS (pas de tuiles)
     OL.baseLayer = L.tileLayer.wms(OL.LIDAR_GB.WMS, {
       layers: OL.LIDAR_GB.LAYERS,
       format: 'image/png',
@@ -40,9 +46,12 @@ OL.switchBase = function(key) {
       attribution: t.attr
     }).addTo(OL.map);
   }
+
+  // Adapte les icônes caméras au fond (cctv-1 vs cctv-sat)
+  if (OL.Cameras.group) OL.Cameras.recheckIcons();
 };
 
-/* Bascule la liste des fonds dans le select #baseSelect */
+/* Remplit le select des fonds #baseSelect (toujours au-dessus des toggles) */
 OL.initBaseSelect = function() {
   var sel = document.getElementById('baseSelect');
   if (!sel) return;
@@ -54,6 +63,5 @@ OL.initBaseSelect = function() {
     opt.textContent = def.name;
     sel.appendChild(opt);
   });
-  sel.value = 'osm';
-  sel.onchange = function() { OL.switchBase(sel.value); };
+  sel.value = OL.baseKey || 'osm';
 };

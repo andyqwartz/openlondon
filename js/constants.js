@@ -18,11 +18,13 @@ OL.S3 = Object.freeze({
 
 // ── Fonds cartographiques ──
 OL.TILES = Object.freeze({
-  OSM:       { url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',     maxZoom: 19, attr: '© OpenStreetMap' },
-  OSM_FR:    { url: 'https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',  maxZoom: 20, attr: '© OpenStreetMap France' },
-  ESRI:      { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom: 19, attr: 'Esri, Maxar, Earthstar' },
-  CARTO_DARK:{ url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', maxZoom: 20, attr: '© OpenStreetMap © CARTO' },
-  CARTO_LIGHT:{ url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', maxZoom: 20, attr: '© OpenStreetMap © CARTO' }
+  OSM:         { url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',      maxZoom: 19, attr: '© OpenStreetMap' },
+  OSM_FR:      { url: 'https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',   maxZoom: 20, attr: '© OpenStreetMap France' },
+  ESRI:        { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom: 19, attr: 'Esri, Maxar, Earthstar' },
+  GOOGLE_SAT:  { url: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',      maxZoom: 20, attr: '© Google' },
+  GOOGLE_HYB:  { url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',      maxZoom: 20, attr: '© Google' },
+  CARTO_DARK:  { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', maxZoom: 20, attr: '© OpenStreetMap © CARTO' },
+  CARTO_LIGHT: { url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', maxZoom: 20, attr: '© OpenStreetMap © CARTO' }
 });
 
 // ── Relief LiDAR Grande-Bretagne (Environment Agency) ──

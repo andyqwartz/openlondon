@@ -127,3 +127,10 @@ OL.Transport.toggle = function(modeKey, show) {
     OL.Transport._remove(modeKey);
   }
 };
+
+OL.Transport.updateCount = function() {
+  var n = 0;
+  Object.keys(OL.Transport.visiblePhys).forEach(function(k) { if (OL.Transport.visiblePhys[k]) n++; });
+  var c = document.getElementById('transportCount');
+  if (c) c.textContent = n;
+};

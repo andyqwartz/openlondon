@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="OpenLondon — Caméras de trafic, trafic et transport de Londres en temps réel. Viewer relif + mobilité (TfL), open source, sans compte ni clé API.">
+  <meta name="description" content="OpenLondon — Caméras de trafic, incidents et transport de Londres en temps réel. Image/vidéo TfL, trafic, relief. Open source, sans clé API.">
   <title>OpenLondon · Caméras & trafic Londres</title>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="OpenLondon">
   <meta property="og:title" content="OpenLondon · Caméras & trafic Londres">
-  <meta property="og:description" content="Caméras TfL, trafic, transport et relief de Londres, en temps réel. Open source, sans clé.">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@2.4.0/Control.FullScreen.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -32,63 +32,36 @@
   <div class="search-results" id="searchResults"></div>
 </div>
 
+<!-- Barre du bas : toggles couches + compteurs (style tfljamcams) -->
 <footer class="bottom-bar">
-  <div class="bottom-chip layer-select layer-select--left">
-    <span>Carte:</span>
-    <select id="baseSelect"></select>
-  </div>
-
-  <div class="bottom-center">
-    <div class="bottom-chip bottom-status">
-      <div id="scaleSlot" class="status-scale"></div>
-      <div class="status-divider" aria-hidden="true"></div>
-      <div class="status-metrics">
-        <div class="status-metric">
-          <span class="status-label">Coords</span>
-          <strong id="coordDisplay" class="status-value">---</strong>
-        </div>
-        <div class="status-metric">
-          <span class="status-label">Zoom</span>
-          <strong id="zoomDisplay" class="status-value">---</strong>
-        </div>
-        <div class="status-metric">
-          <span class="status-label">Caméras</span>
-          <strong id="camCount" class="status-value">—</strong>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bottom-chip layer-select layer-select--right">
-    <span>Trafic:</span>
-    <strong id="trafficCount" class="status-value">—</strong>
+  <div class="bottom-chip toggle-chip">
+    <button type="button" class="toggle-btn active" id="btn-cameras" title="Afficher/masquer les caméras">
+      <img src="assets/icons/cams.png" alt="Caméras"><span>Caméras</span><strong id="camCount" class="cnt">—</strong>
+    </button>
+    <button type="button" class="toggle-btn" id="btn-incidents" title="Afficher/masquer les incidents">
+      <img src="assets/icons/incidents.png" alt="Incidents"><span>Incidents</span><strong id="incCount" class="cnt">—</strong>
+    </button>
+    <button type="button" class="toggle-btn" id="btn-transport" title="Afficher/masquer le transport">
+      <img src="assets/icons/train_stops.png" alt="Transport"><span>Transport</span><strong class="cnt" id="transportCount">0</strong>
+    </button>
+    <span class="toggle-sep"></span>
+    <button type="button" class="toggle-btn feed-btn" id="btn-feed" title="Basculer image / vidéo">🖼 Image</button>
+    <span class="toggle-sep"></span>
+    <label class="base-lbl" title="Fond de carte">
+      <span class="base-txt">Carte:</span>
+      <select id="baseSelect"></select>
+    </label>
   </div>
 </footer>
 
+<!-- Toolbar (droite) : allégée, sans géoloc -->
 <div id="toolbar">
-  <button id="btn-cameras" type="button" class="active" title="Caméras TfL">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="4" width="13" height="9" rx="1.5"/><circle cx="8" cy="8.5" r="3"/><path d="M8 5.5v.5"/></svg>
-  </button>
-  <button id="btn-traffic" type="button" title="Trafic / incidents">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="4" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="8" cy="12" r="1.6"/><path d="M5.5 4H3m7.5 0h2.5M5.5 8H3m7.5 0h2.5M5.5 12H3m7.5 0h2.5"/></svg>
-  </button>
-  <button id="btn-transport" type="button" title="Transport (bus, métro, rail)">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="6" width="12" height="6" rx="1.5"/><path d="M2 9h12M5 12v1.5M11 12v1.5M6 12h4"/><circle cx="5.5" cy="10" r=".6" fill="currentColor"/><circle cx="10.5" cy="10" r=".6" fill="currentColor"/></svg>
-  </button>
+  <button id="btn-info" type="button" title="À propos & données">ⓘ</button>
   <div class="sep"></div>
-  <button id="btn-bookmarks" type="button" title="Lieux">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 1.5h8v13l-4-3.5-4 3.5v-13z"/></svg>
-  </button>
-  <button id="btn-geoloc" type="button" title="Position">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3"/></svg>
-  </button>
+  <button id="btn-bookmarks" type="button" title="Lieux">🔖</button>
+  <button id="btn-export" type="button" title="Exporter en PNG">⬇</button>
   <div class="sep"></div>
-  <button id="btn-export" type="button" title="Exporter en PNG">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v8M5 7l3 3 3-3M2.5 13h11"/></svg>
-  </button>
-  <button id="btn-reset" type="button" title="Reset vue">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6.5A5.5 5.5 0 0 1 13 7.5M13 9.5A5.5 5.5 0 0 1 3 8.5"/><path d="M2.5 4v3h3M13.5 12V9h-3"/></svg>
-  </button>
+  <button id="btn-reset" type="button" title="Reset vue">⟲</button>
 </div>
 
 <div id="transportPanel">
@@ -98,7 +71,7 @@
   </div>
   <div class="panel-body">
     <div class="transport-list"></div>
-    <div class="panel-hint">Sélectionne les réseaux à afficher. Données chargées une fois, mises en cache.</div>
+    <div class="panel-hint">Sélectionne les réseaux à afficher. Données chargées une fois, mises en cache (24 h).</div>
   </div>
 </div>
 
@@ -111,6 +84,20 @@
     </div>
   </div>
   <div id="bookmarksList"></div>
+</div>
+
+<div id="infoPanel">
+  <div class="panel-header">
+    <span>À propos & données</span>
+    <button class="panel-close" id="info-close" type="button" title="Fermer">&#x2715;</button>
+  </div>
+  <div class="panel-body">
+    <p><strong>OpenLondon</strong> — viewer de mobilité londonienne : caméras de trafic, incidents et transport en temps réel.</p>
+    <p>Données mobilité © <a href="https://tfl.gov.uk/info-for/open-data-users/" target="_blank" rel="noopener">Transport for London</a> (Open Data).<br>
+    Fond © OpenStreetMap / Google / Esri · Relief © <a href="https://environment.data.gov.uk/" target="_blank" rel="noopener">Environment Agency</a> (OGL v3.0).</p>
+    <p>Site indépendant, <em>non affilié</em> à TfL.</p>
+    <p class="info-links"><a href="data.html" target="_blank">Sources &amp; données</a> · <a href="privacy.html" target="_blank">Politique de confidentialité</a></p>
+  </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
