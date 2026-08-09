@@ -148,9 +148,9 @@ body {
   left: 12px;
   right: 12px;
   z-index: 2000;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
   pointer-events: none;
 }
@@ -169,8 +169,11 @@ body {
   white-space: nowrap;
   min-height: 34px;
 }
-.bottom-center { display: flex; align-items: center; justify-content: center; flex: 1; min-width: 0; pointer-events: none; }
+/* Gauche : carte ; centre : toujours centré ; droite : toggles */
+.layer-select--left { justify-self: start; max-width: min(28vw, 260px); }
+.bottom-center { display: flex; align-items: center; justify-content: center; min-width: 0; pointer-events: none; }
 .bottom-center .bottom-chip { pointer-events: auto; }
+.toggle-chip { justify-self: end; }
 .bottom-status { display: flex; align-items: stretch; gap: 0; padding: 0; overflow: hidden; }
 .status-scale { display: flex; align-items: center; padding: 6px 14px; flex-shrink: 0; }
 .status-scale .leaflet-control-scale { position: static !important; margin: 0 !important; }
