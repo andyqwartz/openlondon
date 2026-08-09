@@ -129,5 +129,4 @@ js/
 ## 12. Git & mémoire (préférences Andy)
 - Commits **progressifs et fréquents** dès la phase 1 (pas de batch final).
 - `memory-bank/`, `research/`, `competitors/`, `sources/` **jamais commités** (.gitignore) — analyse en local.
-- Ne jamais mentionner daevorn dans ce repo public.
-- Recap avant chaque grosse étape.
+- Recaps avant chaque grosse étape.
