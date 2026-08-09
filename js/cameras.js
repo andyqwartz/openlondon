@@ -132,8 +132,17 @@ OL.Cameras._schedule = function() {
 OL.Cameras.setFeedType = function(type) {
   OL.Cameras.feedType = (type === 'video') ? 'video' : 'image';
   var b = document.getElementById('btn-feed');
-  if (b) b.textContent = (OL.Cameras.feedType === 'video') ? '▶ Video' : '🖼 Image';
+  if (b) {
+    b.innerHTML = (OL.Cameras.feedType === 'video')
+      ? OL.Cameras._FEED_ICON.video + '<span>Video</span>'
+      : OL.Cameras._FEED_ICON.photo + '<span>Image</span>';
+  }
   OL.Cameras.recheckIcons();
+};
+
+OL.Cameras._FEED_ICON = {
+  photo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><circle cx="8" cy="8" r="1"/></svg>',
+  video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="6" width="13" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3"/></svg>'
 };
 
 OL.Cameras.bindPopupActions = function() {
@@ -148,17 +157,24 @@ OL.Cameras.bindPopupActions = function() {
   });
 };
 
+OL.Cameras._MEDIA_ICON = {
+  photo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><circle cx="8" cy="8" r="1"/></svg>',
+  video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="2" y="6" width="13" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3"/></svg>'
+};
+OL.Cameras._EXPAND_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+
 OL.Cameras._openZoom = function(btn) {
   var url = btn.getAttribute('data-url');
   var video = btn.getAttribute('data-video') || '';
   var name = btn.getAttribute('data-name') || '';
+  var startVideo = btn.getAttribute('data-mode') === 'video' ? 1 : 0;
 
   var box = document.createElement('div');
   box.className = 'lightbox';
   box.innerHTML = '<div class="lb-stage"><img class="lb-img" alt="">'
     + '<video class="lb-video" autoplay muted loop playsinline controls style="display:none"></video></div>'
     + '<div class="lb-bar">'
-    + '<button class="lb-media" type="button">Video</button>'
+    + '<button class="lb-media" type="button" title="Switch photo/video"></button>'
     + '<span class="lb-spacer"></span>'
     + '<button class="lb-zoom out" type="button" title="Zoom out">−</button>'
     + '<button class="lb-zoom reset" type="button" title="Reset">1:1</button>'
@@ -172,30 +188,45 @@ OL.Cameras._openZoom = function(btn) {
   var stage = box.querySelector('.lb-stage');
   var img = box.querySelector('.lb-img');
   var vid = box.querySelector('.lb-video');
+  var mediaBtn = box.querySelector('.lb-media');
   var scale = 1, tx = 0, ty = 0;
-
-  img.onload = function() { img.style.display = 'block'; vid.style.display = 'none'; apply(); };
-  img.src = url + '?i=' + Date.now();
+  var currentVideo = startVideo;
 
   function apply() {
     img.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
     vid.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
   }
   function setZoom(f) { scale = Math.min(8, Math.max(1, scale * f)); apply(); }
+  function showMedia(isVideo) {
+    currentVideo = isVideo;
+    img.style.display = isVideo ? 'none' : 'block';
+    vid.style.display = isVideo ? 'block' : 'none';
+    scale = 1; tx = 0; ty = 0; apply();
+    mediaBtn.innerHTML = isVideo ? OL.Cameras._MEDIA_ICON.photo : OL.Cameras._MEDIA_ICON.video;
+    mediaBtn.title = isVideo ? 'Switch to photo' : 'Switch to video';
+  }
+
+  img.onload = function() {
+    if (!currentVideo) showMedia(false);
+  };
+  img.src = url + '?i=' + Date.now();
+  if (currentVideo && video) {
+    showMedia(true);
+    vid.src = video + '?i=' + Date.now();
+  } else if (!video && mediaBtn) {
+    mediaBtn.style.display = 'none';
+    currentVideo = false;
+    showMedia(false);
+  }
 
   box.querySelector('.lb-zoom.in').onclick = function() { setZoom(1.4); };
   box.querySelector('.lb-zoom.out').onclick = function() { setZoom(1 / 1.4); };
   box.querySelector('.lb-zoom.reset').onclick = function() { scale = 1; tx = 0; ty = 0; apply(); };
   box.querySelector('.lb-close').onclick = OL.Cameras._closeZoom;
 
-  var mediaBtn = box.querySelector('.lb-media');
-  if (video && mediaBtn) {
-    mediaBtn.onclick = function() {
-      var showingVideo = vid.style.display !== 'none';
-      if (showingVideo) { vid.style.display = 'none'; img.style.display = 'block'; scale = 1; tx = 0; ty = 0; apply(); mediaBtn.textContent = 'Video'; }
-      else { vid.style.display = 'block'; img.style.display = 'none'; vid.src = video + '?i=' + Date.now(); mediaBtn.textContent = 'Photo'; }
-    };
-  } else if (mediaBtn) { mediaBtn.style.display = 'none'; }
+  if (mediaBtn) {
+    mediaBtn.onclick = function() { showMedia(!currentVideo); };
+  }
 
   stage.addEventListener('wheel', function(e) {
     e.preventDefault();
@@ -242,8 +273,9 @@ OL.Cameras._popupHtml = function(cam) {
   var t = Date.now();
   var zoomBtn = '<button class="cam-zoombtn" data-url="' + OL.esc(cam.imageUrl) + '"'
     + ' data-video="' + (cam.videoUrl ? OL.esc(cam.videoUrl) : '') + '"'
+    + ' data-mode="' + (OL.Cameras.feedType === 'video' ? 'video' : 'image') + '"'
     + ' data-name="' + OL.esc(cam.name) + '">'
-    + (cam.videoUrl ? '⤢ Enlarge photo/video' : '⤢ Enlarge') + '</button>';
+    + OL.Cameras._EXPAND_ICON + '<span>Enlarge</span></button>';
 
   if (OL.Cameras.feedType === 'video' && cam.videoUrl) {
     return '<div class="cam-pop cam-video">' + header
