@@ -1,0 +1,22 @@
+# Analyses privées — gardées en LOCAL, jamais commitées
+memory-bank/
+competitors/
+research/
+sources/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Éditeur
+.vscode/
+.idea/
+*.swp
+
+# Node / build (si un jour un bundler est introduit)
+node_modules/
+dist/
+build/
+*.log
+
+# Assets générés / lourds (à indiquer si besoin à la volée)
