@@ -23,7 +23,21 @@ OL.Screenshot.capture = function() {
     useCORS: true,
     allowTaint: false,
     backgroundColor: '#0e1116',
-    scale: 2
+    scale: 2,
+    onclone: function(doc) {
+      // Retire les images caméras (S3 legacy n'a pas d'ACAO -> sinon l'export
+      // casse le canvas). La carte et les marqueurs sont conservés.
+      var imgs = doc.querySelectorAll('.cam-img');
+      for (var i = 0; i < imgs.length; i++) {
+        imgs[i].remove();
+      }
+      // Neutralise aussi tout <img> cross-origin non-CORS (tuiles OK, déjà servies)
+      var all = doc.querySelectorAll('img');
+      for (var j = 0; j < all.length; j++) {
+        var src = all[j].getAttribute('src') || '';
+        if (src.indexOf('jamcams.tfl.gov.uk') !== -1) all[j].remove();
+      }
+    }
   }).then(function(canvas) {
     canvas.toBlob(function(blob) {
       if (!blob) return;
