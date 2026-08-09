@@ -56,6 +56,14 @@ OL.toggleTransport = function(modeKey, show) {
   OL.URLSync.update();
 };
 
+OL.night = false;
+OL.toggleNight = function() {
+  OL.night = !OL.night;
+  var b = document.getElementById('btn-night');
+  if (b) b.classList.toggle('active', OL.night);
+  document.body.classList.toggle('night', OL.night);
+};
+
 OL.TOOLS = {};
 
 OL.TOOLS.init = function() {
@@ -78,6 +86,10 @@ OL.TOOLS.init = function() {
     var v = OL.CONFIG.defaultView;
     OL.map.setView([v.lat, v.lng], v.zoom);
     OL.URLSync.update();
+  });
+  bind('btn-night', function(e) {
+    e.preventDefault();
+    OL.toggleNight();
   });
 
   document.addEventListener('keydown', function(e) {

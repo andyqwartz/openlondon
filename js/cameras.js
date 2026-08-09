@@ -4,7 +4,7 @@ OL.Cameras = {
   loaded: false,
   pollTimer: null,
   viewportTimer: null,
-  feedType: 'image',
+  feedType: 'video',
   meta: { total: 0, available: 0, shown: 0 }
 };
 
@@ -150,20 +150,69 @@ OL.Cameras.bindPopupActions = function() {
 
 OL.Cameras._openZoom = function(btn) {
   var url = btn.getAttribute('data-url');
+  var video = btn.getAttribute('data-video') || '';
   var name = btn.getAttribute('data-name') || '';
-  var img = new Image();
-  img.onload = function() {
-    var box = document.createElement('div');
-    box.className = 'lightbox';
-    box.innerHTML = '<figure><img src="' + OL.esc(url) + '?i=' + Date.now() + '" alt="' + OL.esc(name) + '">'
-      + '<figcaption>' + OL.esc(name) + '</figcaption></figure>'
-      + '<button class="lb-close" title="Close">&#x2715;</button>';
-    box.querySelector('.lb-close').onclick = OL.Cameras._closeZoom;
-    document.body.appendChild(box);
-    document.body.classList.add('lb-open');
-  };
-  img.onerror = function() { alert('Image unavailable.'); };
-  img.src = url;
+
+  var box = document.createElement('div');
+  box.className = 'lightbox';
+  box.innerHTML = '<div class="lb-stage"><img class="lb-img" alt="">'
+    + '<video class="lb-video" autoplay muted loop playsinline controls style="display:none"></video></div>'
+    + '<div class="lb-bar">'
+    + '<button class="lb-media" type="button">Video</button>'
+    + '<span class="lb-spacer"></span>'
+    + '<button class="lb-zoom out" type="button" title="Zoom out">−</button>'
+    + '<button class="lb-zoom reset" type="button" title="Reset">1:1</button>'
+    + '<button class="lb-zoom in" type="button" title="Zoom in">+</button>'
+    + '<span class="lb-spacer"></span>'
+    + '<button class="lb-close" type="button" title="Close">&#x2715;</button>'
+    + '</div>';
+  document.body.appendChild(box);
+  document.body.classList.add('lb-open');
+
+  var stage = box.querySelector('.lb-stage');
+  var img = box.querySelector('.lb-img');
+  var vid = box.querySelector('.lb-video');
+  var scale = 1, tx = 0, ty = 0;
+
+  img.onload = function() { img.style.display = 'block'; vid.style.display = 'none'; apply(); };
+  img.src = url + '?i=' + Date.now();
+
+  function apply() {
+    img.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+    vid.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+  }
+  function setZoom(f) { scale = Math.min(8, Math.max(1, scale * f)); apply(); }
+
+  box.querySelector('.lb-zoom.in').onclick = function() { setZoom(1.4); };
+  box.querySelector('.lb-zoom.out').onclick = function() { setZoom(1 / 1.4); };
+  box.querySelector('.lb-zoom.reset').onclick = function() { scale = 1; tx = 0; ty = 0; apply(); };
+  box.querySelector('.lb-close').onclick = OL.Cameras._closeZoom;
+
+  var mediaBtn = box.querySelector('.lb-media');
+  if (video && mediaBtn) {
+    mediaBtn.onclick = function() {
+      var showingVideo = vid.style.display !== 'none';
+      if (showingVideo) { vid.style.display = 'none'; img.style.display = 'block'; scale = 1; tx = 0; ty = 0; apply(); mediaBtn.textContent = 'Video'; }
+      else { vid.style.display = 'block'; img.style.display = 'none'; vid.src = video + '?i=' + Date.now(); mediaBtn.textContent = 'Photo'; }
+    };
+  } else if (mediaBtn) { mediaBtn.style.display = 'none'; }
+
+  stage.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    setZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
+  }, { passive: false });
+  var dragging = false, sx = 0, sy = 0, stx = 0, sty = 0;
+  stage.addEventListener('mousedown', function(e) {
+    if (scale <= 1) return;
+    dragging = true; sx = e.clientX; sy = e.clientY; stx = tx; sty = ty;
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    tx = stx + (e.clientX - sx);
+    ty = sty + (e.clientY - sy);
+    apply();
+  });
+  window.addEventListener('mouseup', function() { dragging = false; });
 };
 
 OL.Cameras._closeZoom = function() {
@@ -191,15 +240,20 @@ OL.Cameras._popupHtml = function(cam) {
   }
 
   var t = Date.now();
+  var zoomBtn = '<button class="cam-zoombtn" data-url="' + OL.esc(cam.imageUrl) + '"'
+    + ' data-video="' + (cam.videoUrl ? OL.esc(cam.videoUrl) : '') + '"'
+    + ' data-name="' + OL.esc(cam.name) + '">'
+    + (cam.videoUrl ? '⤢ Enlarge photo/video' : '⤢ Enlarge') + '</button>';
+
   if (OL.Cameras.feedType === 'video' && cam.videoUrl) {
     return '<div class="cam-pop cam-video">' + header
       + '<video class="cam-vid" autoplay muted loop playsinline controls preload="metadata" '
       + 'src="' + OL.esc(cam.videoUrl) + '?i=' + t + '"></video>'
-      + '<button class="cam-zoombtn" data-url="' + OL.esc(cam.imageUrl) + '" data-name="' + OL.esc(cam.name) + '">⤢ View image</button>'
+      + zoomBtn
       + '</div>';
   }
   return '<div class="cam-pop cam-image">' + header
     + '<img class="cam-img" src="' + OL.esc(cam.imageUrl) + '?i=' + t + '" alt="' + OL.esc(cam.name) + '">'
-    + '<button class="cam-zoombtn" data-url="' + OL.esc(cam.imageUrl) + '" data-name="' + OL.esc(cam.name) + '">⤢ Enlarge</button>'
+    + zoomBtn
     + '</div>';
 };
