@@ -1,5 +1,3 @@
-/* OpenLondon — Recherche London (TfL StopPoint/Search + Nominatim OSM) */
-
 OL.Search = {
   input: null,
   results: null,
@@ -43,7 +41,6 @@ OL.Search.do = function() {
   OL.Search._search(q);
 };
 
-/* Deux sources : TfL StopPoints + Nominatim OSM (adresses/quartiers Londres) */
 OL.Search._search = function(q) {
   var cacheKey = q.toLowerCase();
   if (OL.Search._cache[cacheKey]) {
@@ -89,7 +86,7 @@ OL.Search._search = function(q) {
       });
     }
     if (settled[1].status === 'fulfilled' && osmVal && osmVal.error) {
-      // Nominatim parfois rate-limité : OK, TfL suffit
+
     }
 
     OL.Search._results = results.slice(0, 12);
@@ -104,7 +101,7 @@ OL.Search._render = function() {
   var self = this;
   this.results.innerHTML = '';
   if (!this._results.length) {
-    this.results.innerHTML = '<div class="no-result">Aucun résultat trouvé</div>';
+    this.results.innerHTML = '<div class="no-result">No results found</div>';
     this.results.style.display = 'block';
     return;
   }

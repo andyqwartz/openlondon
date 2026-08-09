@@ -1,5 +1,3 @@
-/* OpenLondon — Toolbar, toggles globaux, panneaux UI, boutons */
-
 OL.UI = { MOBILE_MQ: '(max-width: 768px)' };
 
 OL.UI.togglePanel = function(panelId, btnId, onOpen) {
@@ -25,9 +23,8 @@ OL.UI.closeAllPanels = function() {
   OL.UI.closePanel('infoPanel', 'btn-info');
 };
 
-/* ── États globaux ── */
 OL.visibleCameras = true;
-OL.visibleTraffic = false;     // = incidents (disruptions TfL en points)
+OL.visibleTraffic = false;
 OL.visibleTransport = '';
 OL.baseKey = 'osm';
 
@@ -59,7 +56,6 @@ OL.toggleTransport = function(modeKey, show) {
   OL.URLSync.update();
 };
 
-/* ── Init += boutons ── */
 OL.TOOLS = {};
 
 OL.TOOLS.init = function() {
@@ -84,7 +80,6 @@ OL.TOOLS.init = function() {
     OL.URLSync.update();
   });
 
-  // Fermeture des panneaux
   document.addEventListener('keydown', function(e) {
     if (e.key !== 'Escape') OL.UI.closeAllPanels();
   });
@@ -95,10 +90,8 @@ OL.TOOLS.init = function() {
   var bmAdd = document.getElementById('bm-add-btn');
   if (bmAdd) bmAdd.onclick = function() { OL.Bookmarks.add(); };
 
-  // Liens de la carte à la fermeture des panneaux
   OL.map.on('click', function() { OL.UI.closeAllPanels(); });
 
-  // Panneau transport : liste des réseaux
   var tp = document.getElementById('transportPanel');
   if (tp) {
     var list = tp.querySelector('.transport-list');
@@ -116,7 +109,6 @@ OL.TOOLS.init = function() {
     }
   }
 
-  // Fond de carte
   OL.initBaseSelect();
   var baseSel = document.getElementById('baseSelect');
   if (baseSel) baseSel.addEventListener('change', function() {
@@ -132,6 +124,5 @@ OL.TOOLS.init = function() {
     if (OL.map) OL.map.invalidateSize();
   });
 
-  // Délégation des actions popup caméra (zoom) + compteur transport
   OL.Cameras.bindPopupActions();
 };

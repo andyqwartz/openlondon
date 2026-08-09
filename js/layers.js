@@ -1,5 +1,3 @@
-/* OpenLondon — Registre des fonds de carte + gestion du switch */
-
 OL.BASE_LAYERS = {
   osm:      { name: 'OSM standard',    tile: 'OSM',        sat: false, map: null },
   osmfr:    { name: 'OSM France',      tile: 'OSM_FR',     sat: false, map: null },
@@ -11,16 +9,11 @@ OL.BASE_LAYERS = {
   light:    { name: 'Lumineux (CARTO)',tile: 'CARTO_LIGHT',sat: false, map: null }
 };
 
-/** True si le fond actuel est un fond satellite (pour icônes caméras). */
 OL.isSat = function() {
   var def = OL.BASE_LAYERS[OL.baseKey];
   return !!(def && def.sat);
 };
 
-/**
- * Bascule le fond de carte.
- * @param {string} key une clé de OL.BASE_LAYERS
- */
 OL.switchBase = function(key) {
   var def = OL.BASE_LAYERS[key];
   if (!def) return;
@@ -47,11 +40,9 @@ OL.switchBase = function(key) {
     }).addTo(OL.map);
   }
 
-  // Adapte les icônes caméras au fond (cctv-1 vs cctv-sat)
   if (OL.Cameras.group) OL.Cameras.recheckIcons();
 };
 
-/* Remplit le select des fonds #baseSelect (toujours au-dessus des toggles) */
 OL.initBaseSelect = function() {
   var sel = document.getElementById('baseSelect');
   if (!sel) return;

@@ -1,10 +1,3 @@
-/* OpenLondon — Initialisation de la carte */
-
-/**
- * Crée la carte Leaflet, ajoute le fond par défaut,
- * le scale control et les events coordonnées/zoom.
- * @returns {L.Map}
- */
 OL.initMap = function() {
   var cfg = OL.CONFIG;
   var map = OL.map = L.map('map', {
@@ -14,18 +7,15 @@ OL.initMap = function() {
     zoomControl: true
   }).setView([cfg.defaultView.lat, cfg.defaultView.lng], cfg.defaultView.zoom);
 
-  // Panes
   map.createPane('overlaysPane');
   map.getPane('overlaysPane').style.zIndex = 400;
   map.getPane('overlaysPane').style.pointerEvents = 'none';
 
-  // Fond par défaut : OSM
   OL.baseLayer = L.tileLayer(OL.TILES.OSM.url, {
     maxZoom: OL.TILES.OSM.maxZoom,
     attribution: OL.TILES.OSM.attr
   }).addTo(map);
 
-  // Info coordonnées + zoom dans la barre de statut
   map.on('mousemove', function(e) {
     document.getElementById('coordDisplay').textContent = OL.formatCoord(e.latlng);
   });
@@ -33,7 +23,6 @@ OL.initMap = function() {
     document.getElementById('zoomDisplay').textContent = map.getZoom();
   });
 
-  // Echelle (intégrée dans la barre inférieure)
   L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
   OL.mountScaleControl();
 

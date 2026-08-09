@@ -1,5 +1,3 @@
-/* OpenLondon — Bookmarks (lieux mémorisés, localStorage) */
-
 OL.Bookmarks = {
   STORAGE_KEY: 'openlondon_bookmarks',
   list: [],
@@ -34,9 +32,9 @@ OL.Bookmarks.save = function() {
 OL.Bookmarks.add = function() {
   var c = OL.map.getCenter();
   var z = OL.map.getZoom();
-  var name = prompt('Nom du lieu :', '');
+  var name = prompt('Place name:', '');
   if (name === null) return;
-  if (!name.trim()) name = 'Marqueur';
+  if (!name.trim()) name = 'Marker';
   OL.Bookmarks.list.push({
     id: 'loc_' + Date.now(),
     name: name,
@@ -94,13 +92,13 @@ OL.Bookmarks.render = function() {
     div.setAttribute('data-id', b.id);
     div.innerHTML =
       '<div class="bm-header">' +
-        '<span class="bm-name" title="Éditer le nom">' + OL.esc(b.name) + '</span>' +
+        '<span class="bm-name" title="Edit name">' + OL.esc(b.name) + '</span>' +
         '<span class="bm-coords">' + b.lat.toFixed(4) + ', ' + b.lng.toFixed(4) + '</span>' +
         '<span class="bm-actions">' +
-          '<button class="bm-go" title="Aller a">Go</button>' +
-          '<button class="bm-editname" title="Renommer">Ren</button>' +
-          '<button class="bm-editnotes" title="Editer note">Note</button>' +
-          '<button class="bm-del" title="Supprimer">Del</button>' +
+          '<button class="bm-go" title="Go">Go</button>' +
+          '<button class="bm-editname" title="Rename">Ren</button>' +
+          '<button class="bm-editnotes" title="Edit note">Note</button>' +
+          '<button class="bm-del" title="Delete">Del</button>' +
         '</span>' +
       '</div>' +
       '<div class="bm-body">' +
@@ -111,7 +109,7 @@ OL.Bookmarks.render = function() {
     div.querySelector('.bm-go').onclick = function() { OL.Bookmarks.goTo(b.id); };
     div.querySelector('.bm-del').onclick = function() { OL.Bookmarks.remove(b.id); };
     div.querySelector('.bm-editname').onclick = function() {
-      var nn = prompt('Renommer :', b.name);
+      var nn = prompt('Rename:', b.name);
       if (nn && nn.trim()) { b.name = nn.trim(); OL.Bookmarks.save(); OL.Bookmarks.render(); }
     };
     div.querySelector('.bm-editnotes').onclick = function() { OL.Bookmarks.editNotes(b.id); };

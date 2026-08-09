@@ -1,5 +1,3 @@
-/* OpenLondon — Synchronisation de l'état dans l'URL (hash) */
-
 OL.URLSync = {
   _keys: ['b', 'y', 'x', 'z', 'c', 'f', 't']
 };

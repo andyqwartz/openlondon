@@ -1,13 +1,10 @@
-/* OpenLondon — Module Trafic / Disruptions */
-
 OL.Traffic = {
   data: [],
-  layer: null,          // groupe de markers
+  layer: null,
   visible: true,
   pollTimer: null
 };
 
-// Couleur par sévérité
 OL.Traffic.SEVERITY = {
   'Minor':    '#f5b301',
   'Moderate': '#e06b2a',
@@ -35,7 +32,6 @@ OL.Traffic.fetch = function() {
     });
 };
 
-/* Parse le champ point "lat,lon" (TfL utilise "lng,lat") */
 OL.Traffic._parsePoint = function(str) {
   if (!str) return null;
   var parts = String(str).split(',');
@@ -59,7 +55,6 @@ OL.Traffic.render = function() {
     var sev = d.severity || 'Unknown';
     var color = OL.Traffic.SEVERITY[sev] || OL.Traffic.SEVERITY_DEFAULT;
 
-    // Icônes réelles (comme l'original) : roadworks / exclamation / closure
     var cat = (d.category || '').toLowerCase();
     var iconName = 'exclamation.png';
     if (OL.isSat()) iconName = 'exclamation-sat.png';

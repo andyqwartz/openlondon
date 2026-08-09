@@ -1,5 +1,3 @@
-/* OpenLondon — Bootstrap */
-
 OL.init = function() {
   OL.Transport.purgeOldCache();
   OL.initMap();
@@ -11,7 +9,6 @@ OL.init = function() {
   OL.URLSync.init();
   OL.Screenshot.init();
 
-  // Charger les données (caméras 882 + trafic 106)
   OL.Cameras.fetchAll();
   OL.Traffic.fetch();
 };

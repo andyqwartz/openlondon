@@ -1,4 +1,3 @@
-/* OpenLondon — Technical Minimalist (adapté de OpenLiDAR) */
 :root {
   --bg: #0e1116;
   --surface: #161b22;
@@ -7,7 +6,7 @@
   --text: #d0d7de;
   --text2: #8b97a5;
   --text3: #5b6773;
-  --accent: #e0433a;          /* rouge TfL */
+  --accent: #e0433a;
   --accent-dim: rgba(224,67,58,.14);
   --radius: 4px;
   --font: 'Inter', -apple-system, sans-serif;
@@ -24,7 +23,6 @@ body {
 }
 #map { width: 100vw; height: 100vh; background: var(--bg); }
 
-/* ── Recherche centree, style arrondi Google-like ── */
 .search-wrap {
   position: fixed;
   top: 12px;
@@ -89,7 +87,6 @@ body {
 .search-results .city { color: var(--text3); font-size: 11px; margin-left: 6px; }
 .search-results .no-result { color: var(--text3); font-style: italic; cursor: default; }
 
-/* ── Toolbar verticale a droite (style OpenLiDAR) ── */
 #toolbar {
   position: fixed;
   right: 10px;
@@ -121,7 +118,7 @@ body {
 #toolbar button.active { background: var(--accent-dim); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 #toolbar button.pinned { background: var(--accent); color: #000; }
 #toolbar .sep { width: 100%; height: 1px; background: var(--border); margin: 2px 0; }
-/* Tooltip */
+
 #toolbar button::after {
   content: attr(title);
   position: absolute;
@@ -141,7 +138,6 @@ body {
 }
 #toolbar button:hover::after { opacity: 1; }
 
-/* ── Barre inferieure unifiee ── */
 .bottom-bar {
   position: fixed;
   bottom: 12px;
@@ -169,7 +165,7 @@ body {
   white-space: nowrap;
   min-height: 34px;
 }
-/* Gauche : carte ; centre : toujours centré ; droite : toggles */
+
 .layer-select--left { justify-self: start; max-width: min(28vw, 260px); }
 .bottom-center { display: flex; align-items: center; justify-content: center; min-width: 0; pointer-events: none; }
 .bottom-center .bottom-chip { pointer-events: auto; }
@@ -197,7 +193,6 @@ body {
 }
 .layer-select select option { background: var(--surface2); color: var(--text); }
 
-/* ── Barre du bas : toggles image + compteurs (style tfljamcams) ── */
 .toggle-chip {
   padding: 5px 8px;
   border-radius: 24px;
@@ -232,7 +227,6 @@ body {
 }
 .base-lbl select option { background: var(--surface2); color: var(--text); }
 
-/* ── Panels ── */
 #transportPanel, #bookmarksPanel {
   position: fixed;
   right: 54px;
@@ -283,7 +277,6 @@ body {
 }
 .bm-add-btn:hover { filter: brightness(1.1); }
 
-/* Transport list */
 .transport-list { display: grid; gap: 6px; }
 .overlay-item {
   display: flex;
@@ -301,7 +294,6 @@ body {
 .overlay-item input[type="checkbox"] { accent-color: var(--accent); }
 .tp-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-/* Bookmarks */
 .bm-item { padding: 6px 8px; margin-bottom: 4px; border: 1px solid var(--border); border-radius: 4px; }
 .bm-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .bm-name { font-weight: 600; font-size: 11px; color: var(--text); cursor: pointer; flex: 1; }
@@ -322,11 +314,9 @@ body {
   font-family: var(--font); resize: vertical; min-height: 28px; width: 100%;
 }
 
-/* ── Icons caméras ── */
 .ol-cam-marker { filter: drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
 .ol-cam-marker.off { opacity: .45; }
 
-/* ── Popups caméra (pro) ── */
 .leaflet-popup-content-wrapper { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,.5); }
 .leaflet-popup-tip { background: var(--surface); }
 .leaflet-popup-content { margin: 0 !important; }
@@ -356,13 +346,11 @@ body {
 .cam-zoombtn:hover { background: var(--accent); color: #fff; }
 .cam-off { color: var(--text3); font-style: italic; padding: 12px; }
 
-/* ── Popups incidents ── */
 .dis-pop { width: 260px; }
 .dis-sev { display: inline-block; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .02em; }
 .dis-cat { display: block; color: var(--text3); font-size: 11px; margin: 6px 0 2px; }
 .dis-comments { color: var(--text); font-size: 12px; line-height: 1.4; }
 
-/* ── Lightbox (zoom image caméra) ── */
 .lightbox {
   position: fixed; inset: 0; z-index: 50000;
   background: rgba(0,0,0,.88);
@@ -382,14 +370,12 @@ body {
 body.lb-open { overflow: hidden; }
 @keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
 
-/* ── Panneau info ── */
 #infoPanel { display: none; position: fixed; z-index: 3000; right: 54px; top: 50%; transform: translateY(-50%); width: 340px; max-width: calc(100vw - 70px); max-height: 70vh; overflow-y: auto; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.5); }
 #infoPanel.open { display: block; }
 #infoPanel p { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
 #infoPanel a { color: var(--accent); }
 #infoPanel .info-links { display: flex; gap: 12px; padding-top: 6px; border-top: 1px solid var(--border); }
 
-/* ── Leaflet controls ── */
 .leaflet-control-zoom { border: 1px solid var(--border) !important; border-radius: 4px !important; overflow: hidden; box-shadow: var(--shadow); }
 .leaflet-control-zoom a {
   display: block; width: 26px; height: 26px; line-height: 26px; text-align: center;
@@ -408,7 +394,6 @@ body.lb-open { overflow: hidden; }
 .leaflet-control-attribution { background: transparent !important; color: var(--text3) !important; font-size: 9px !important; }
 .leaflet-control-attribution a { color: var(--text2) !important; }
 
-/* ── Responsive mobile ── */
 @media (max-width: 768px) {
   .search-wrap { width: calc(100vw - 16px); }
   #toolbar { flex-direction: row; right: auto; left: 50%; top: auto; bottom: 54px; transform: translateX(-50%); }

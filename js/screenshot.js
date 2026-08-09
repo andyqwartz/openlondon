@@ -1,5 +1,3 @@
-/* OpenLondon — Capture d'écran PNG (html2canvas, monovue) */
-
 OL.Screenshot = {
   _loaded: false
 };
@@ -25,13 +23,12 @@ OL.Screenshot.capture = function() {
     backgroundColor: '#0e1116',
     scale: 2,
     onclone: function(doc) {
-      // Retire les images caméras (S3 legacy n'a pas d'ACAO -> sinon l'export
-      // casse le canvas). La carte et les marqueurs sont conservés.
+
       var imgs = doc.querySelectorAll('.cam-img');
       for (var i = 0; i < imgs.length; i++) {
         imgs[i].remove();
       }
-      // Neutralise aussi tout <img> cross-origin non-CORS (tuiles OK, déjà servies)
+
       var all = doc.querySelectorAll('img');
       for (var j = 0; j < all.length; j++) {
         var src = all[j].getAttribute('src') || '';

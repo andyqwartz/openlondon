@@ -1,19 +1,8 @@
-/* OpenLondon — Module Transport (bus, métro, rail, taxis via StopPoint)
- *
- * ⛔ ANTI-429 STRICT : TfL rate-limite `StopPoint/Type/?lat/lon/radius` très
-  sévèrement (429 dès quelques appels). On le REMPLACE par `StopPoint/Mode/{mode}`
-  qui renvoie TOUS les arrêts d'un réseau en UN seul appel, SANS lat/lon/radius.
-  -> une seule requête par réseau, chargée une fois, cache 24 h. Jamais de 429.
- *   1. Tout appel passe par OL.Net (file sérielle, 4 s d'espacement).
- *   2. Cache localStorage (TTL 24 h) : on ne re-rate jamais une donnée chargée.
- *   3. AUCUN refetch automatique au moveend. On charge UNIQUEMENT à l'activation.
- */
-
 OL.Transport = {
-  groups: {},        // modeKey -> L.layerGroup
-  visiblePhys: {},   // modeKey -> bool
-  _cacheTTL: 24 * 3600 * 1000,  // 24 h
-  _loading: {}       // modeKey -> bool (anti doublon en vol)
+  groups: {},
+  visiblePhys: {},
+  _cacheTTL: 24 * 3600 * 1000,
+  _loading: {}
 };
 
 OL.Transport._readCache = function(mode) {
@@ -29,35 +18,26 @@ OL.Transport._readCache = function(mode) {
 OL.Transport._writeCache = function(mode, stops) {
   try {
     localStorage.setItem('ol_transport_' + mode, JSON.stringify({ ttl: Date.now(), stops: stops }));
-  } catch (e) { /* quota */ }
+  } catch (e) {  }
 };
 
-/**
- * Purge l'ancien cache (clés naptan/metro/taxi de la v1). Un seul appel.
- * À exécuter au bootstrap.
- */
 OL.Transport.purgeOldCache = function() {
   try {
     var old = ['ol_transport_metro', 'ol_transport_taxi', 'ol_transport_bus',
                'ol_transport_rail', 'ol_transport_dlr', 'ol_transport_overground',
                'ol_transport_elizabeth', 'ol_transport_tram'];
     old.forEach(function(k) { localStorage.removeItem(k); });
-  } catch (e) { /* ignore */ }
+  } catch (e) {  }
 };
 
-/**
- * Charge un réseau via StopPoint/Mode (1 appel, pas de lat/lon).
- * @param {string} modeKey clé de OL.TRANSPORT_TYPES
- */
 OL.Transport.load = function(modeKey) {
   var def = OL.TRANSPORT_TYPES[modeKey];
   if (!def || !OL.map) return;
 
-  // Cache déjà présent -> affichage immédiat, zéro appel réseau
   var cached = OL.Transport._readCache(modeKey);
   if (cached) { OL.Transport._render(modeKey, cached); return; }
 
-  if (OL.Transport._loading[modeKey]) return; // un seul en vol
+  if (OL.Transport._loading[modeKey]) return;
 
   var url = OL.API.BASE + '/StopPoint/Mode/' + encodeURIComponent(def.mode);
   OL.Transport._loading[modeKey] = true;
