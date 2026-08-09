@@ -1,6 +1,7 @@
 /* OpenLondon — Bootstrap */
 
 OL.init = function() {
+  OL.Transport.purgeOldCache();
   OL.initMap();
   OL.initBaseSelect();
   OL.Search.init();

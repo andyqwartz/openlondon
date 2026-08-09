@@ -34,12 +34,15 @@ OL.LIDAR_GB = Object.freeze({
   attr: '© Environment Agency — OGL v3.0'
 });
 
-// ── Types StopPoint (Naptan) pour le module Transport ──
+// ── Réseaux Transport — utilisent /StopPoint/Mode/{mode} (1 appel par réseau) ──
 OL.TRANSPORT_TYPES = Object.freeze({
-  bus:     { label: 'Bus',              naptan: 'NaptanPublicBusCoachTram', color: '#e0433a', icon: 'bus' },
-  metro:   { label: 'Métro (Tube)',     naptan: 'NaptanMetroStation',       color: '#1a1a2e', icon: 'metro' },
-  rail:    { label: 'Rail national',    naptan: 'NaptanRailStation',        color: '#6a329f', icon: 'rail' },
-  taxi:    { label: 'Taxis',            naptan: 'NaptanTaxiRank',           color: '#f5b301', icon: 'taxi' }
+  tube:       { label: 'Métro (Tube)',   mode: 'tube',          color: '#e0433a', icon: 'metro' },
+  rail:       { label: 'Rail national',  mode: 'national-rail', color: '#6a329f', icon: 'rail' },
+  dlr:        { label: 'DLR',            mode: 'dlr',           color: '#00a1a1', icon: 'metro' },
+  overground: { label: 'Overground',     mode: 'overground',    color: '#e8762c', icon: 'rail' },
+  elizabeth:  { label: 'Elizabeth Line', mode: 'elizabeth-line',color: '#8c2d9f', icon: 'rail' },
+  tram:       { label: 'Tram',           mode: 'tram',          color: '#66cc33', icon: 'metro' },
+  bus:        { label: 'Bus',            mode: 'bus',           color: '#f5b301', icon: 'bus' }
 });
 
 // ── Attribution combinée ──

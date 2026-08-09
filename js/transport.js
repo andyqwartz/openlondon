@@ -1,27 +1,19 @@
 /* OpenLondon — Module Transport (bus, métro, rail, taxis via StopPoint)
  *
- * ⛔ ANTI-429 STRICT : TfL rate-limite StopPoint/Type très sévèrement.
- * Règles absolues :
+ * ⛔ ANTI-429 STRICT : TfL rate-limite `StopPoint/Type/?lat/lon/radius` très
+  sévèrement (429 dès quelques appels). On le REMPLACE par `StopPoint/Mode/{mode}`
+  qui renvoie TOUS les arrêts d'un réseau en UN seul appel, SANS lat/lon/radius.
+  -> une seule requête par réseau, chargée une fois, cache 24 h. Jamais de 429.
  *   1. Tout appel passe par OL.Net (file sérielle, 4 s d'espacement).
- *   2. Cache localStorage par cellule (~0.2°, TTL 24 h) : on ne re-rate pas
- *      une zone déjà chargée.
- *   3. AUCUN refetch automatique au moveend. On charge UNIQUEMENT à l'activation
- *      (toggle) ou au clic sur "Recharger". Pas de rechargement pendant le pan.
+ *   2. Cache localStorage (TTL 24 h) : on ne re-rate jamais une donnée chargée.
+ *   3. AUCUN refetch automatique au moveend. On charge UNIQUEMENT à l'activation.
  */
 
 OL.Transport = {
   groups: {},        // modeKey -> L.layerGroup
   visiblePhys: {},   // modeKey -> bool
   _cacheTTL: 24 * 3600 * 1000,  // 24 h
-  _cellDeg: 0.2,
-  _lastCell: {}      // modeKey -> "lat,lon" cellule déjà chargée
-};
-
-OL.Transport._cellKey = function(mode) {
-  var c = OL.map.getCenter();
-  var lat = Math.round(c.lat / OL.Transport._cellDeg);
-  var lng = Math.round(c.lng / OL.Transport._cellDeg);
-  return lat + ',' + lng;
+  _loading: {}       // modeKey -> bool (anti doublon en vol)
 };
 
 OL.Transport._readCache = function(mode) {
@@ -29,7 +21,7 @@ OL.Transport._readCache = function(mode) {
     var raw = localStorage.getItem('ol_transport_' + mode);
     if (!raw) return null;
     var d = JSON.parse(raw);
-    if (!d.ttl || Date.now() - d.ttl > OL.Transport._cacheTTL) return null;
+    if (Date.now() - d.ttl > OL.Transport._cacheTTL) return null;
     return d.stops;
   } catch (e) { return null; }
 };
@@ -41,23 +33,34 @@ OL.Transport._writeCache = function(mode, stops) {
 };
 
 /**
- * Charge un réseau. Cache par cellule si présent, sinon UN appel via OL.Net.
+ * Purge l'ancien cache (clés naptan/metro/taxi de la v1). Un seul appel.
+ * À exécuter au bootstrap.
+ */
+OL.Transport.purgeOldCache = function() {
+  try {
+    var old = ['ol_transport_metro', 'ol_transport_taxi', 'ol_transport_bus',
+               'ol_transport_rail', 'ol_transport_dlr', 'ol_transport_overground',
+               'ol_transport_elizabeth', 'ol_transport_tram'];
+    old.forEach(function(k) { localStorage.removeItem(k); });
+  } catch (e) { /* ignore */ }
+};
+
+/**
+ * Charge un réseau via StopPoint/Mode (1 appel, pas de lat/lon).
  * @param {string} modeKey clé de OL.TRANSPORT_TYPES
  */
 OL.Transport.load = function(modeKey) {
   var def = OL.TRANSPORT_TYPES[modeKey];
   if (!def || !OL.map) return;
 
-  var cell = OL.Transport._cellKey(modeKey);
+  // Cache déjà présent -> affichage immédiat, zéro appel réseau
+  var cached = OL.Transport._readCache(modeKey);
+  if (cached) { OL.Transport._render(modeKey, cached); return; }
 
-  // 1) Cache de zone déjà chargée → affichage immédiat, zéro appel réseau
-  if (OL.Transport._lastCell[modeKey] === cell) {
-    var zone = OL.Transport._readCache(modeKey);
-    if (zone) { OL.Transport._render(modeKey, zone); return; }
-  }
+  if (OL.Transport._loading[modeKey]) return; // un seul en vol
 
-  var url = OL.API.BASE + OL.API.STOPPOINT + encodeURIComponent(def.naptan) +
-    '?lat=' + OL.map.getCenter().lat + '&lon=' + OL.map.getCenter().lng + '&radius=10000';
+  var url = OL.API.BASE + '/StopPoint/Mode/' + encodeURIComponent(def.mode);
+  OL.Transport._loading[modeKey] = true;
 
   OL.Net.enqueue('stp_' + modeKey,
     function() {
@@ -67,17 +70,15 @@ OL.Transport.load = function(modeKey) {
       });
     },
     function(json, err) {
+      OL.Transport._loading[modeKey] = false;
       if (err) {
-        // Repli : affiche le cache obsolète s'il existe, sinon rien
         var stale = OL.Transport._readCache(modeKey);
-        if (stale) OL.Transport._render(modeKey, stale);
-        else OL.Transport._render(modeKey, []);
+        OL.Transport._render(modeKey, stale || []);
         return;
       }
       var list = Array.isArray(json) ? json : [];
       OL.Transport._render(modeKey, list);
       OL.Transport._writeCache(modeKey, list);
-      OL.Transport._lastCell[modeKey] = OL.Transport._cellKey(modeKey);
     });
 };
 
