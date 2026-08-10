@@ -100,6 +100,11 @@
     <button class="panel-close" id="tp-close" type="button" title="Close">&#x2715;</button>
   </div>
   <div class="panel-body">
+    <div class="bus-row">
+      <input id="busRouteInput" type="text" placeholder="Bus route (ex: 23)" autocomplete="off">
+      <button id="busRouteBtn" type="button">Go</button>
+      <span class="bus-route-label" id="busRouteLabel" style="display:none"></span>
+    </div>
     <div class="transport-list"></div>
     <div class="panel-hint">Select the networks to display. Data loaded once and cached (24 h).</div>
   </div>

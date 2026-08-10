@@ -234,12 +234,12 @@ body {
 
 #transportPanel, #bookmarksPanel {
   position: fixed;
-  right: 54px;
+  right: 74px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 3000;
   width: 300px;
-  max-width: calc(100vw - 70px);
+  max-width: calc(100vw - 90px);
   max-height: min(70vh, 480px);
   overflow-y: auto;
   display: none;
@@ -283,6 +283,25 @@ body {
 .bm-add-btn:hover { filter: brightness(1.1); }
 
 .transport-list { display: grid; gap: 6px; }
+.bus-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+}
+.bus-row input {
+  flex: 1; min-width: 0; padding: 6px 8px; font-size: 12px;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface2); color: var(--text); font-family: var(--font);
+}
+.bus-row button {
+  padding: 6px 12px; font-size: 12px; font-weight: 600;
+  background: var(--accent); color: #fff; border: none; border-radius: 4px;
+  cursor: pointer; font-family: var(--font); white-space: nowrap;
+}
+.bus-row button:hover { filter: brightness(1.1); }
+.bus-route-label {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  color: var(--accent); background: var(--accent-dim);
+  border-radius: 10px; padding: 2px 8px;
+}
 .overlay-item {
   display: flex;
   align-items: center;

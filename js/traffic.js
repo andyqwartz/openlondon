@@ -34,7 +34,7 @@ OL.Traffic.fetch = function() {
 
 OL.Traffic._parsePoint = function(str) {
   if (!str) return null;
-  var parts = String(str).split(',');
+  var parts = String(str).replace(/^.*\[|\].*$/g, '').split(',');
   if (parts.length < 2) return null;
   var lng = parseFloat(parts[0]);
   var lat = parseFloat(parts[1]);

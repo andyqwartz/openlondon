@@ -109,6 +109,7 @@ OL.TOOLS.init = function() {
     var list = tp.querySelector('.transport-list');
     if (list) {
       Object.keys(OL.TRANSPORT_TYPES).forEach(function(k) {
+        if (k === 'bus') return;
         var def = OL.TRANSPORT_TYPES[k];
         var label = document.createElement('label');
         label.className = 'overlay-item';
@@ -118,6 +119,18 @@ OL.TOOLS.init = function() {
         label.querySelector('input').onchange = function() { OL.toggleTransport(k, this.checked); };
         list.appendChild(label);
       });
+    }
+    var busBtn = document.getElementById('busRouteBtn');
+    var busInput = document.getElementById('busRouteInput');
+    if (busBtn && busInput) {
+      function goBus() {
+        var r = busInput.value.trim();
+        if (!r) return;
+        OL.toggleTransport('bus', true);
+        OL.URLSync.update();
+      }
+      busBtn.onclick = goBus;
+      busInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') goBus(); });
     }
   }
 

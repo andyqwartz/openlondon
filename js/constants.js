@@ -4,6 +4,7 @@ OL.API = Object.freeze({
   DISRUPTION:'/Road/All/Disruption',
   STOPPOINT: '/StopPoint/Type/',
   STOPSEARCH:'/StopPoint/Search',
+  LINE_STOPS:'/Line/',
   MODES:     '/Line/Meta/Modes',
   STOP_TYPES:'/StopPoint/Meta/StopTypes'
 });
@@ -24,8 +25,9 @@ OL.TILES = Object.freeze({
 
 OL.LIDAR_GB = Object.freeze({
   WMS: 'https://environment.data.gov.uk/spatialdata/lidar-composite-digital-terrain-model-dtm-1m/wms',
-  LAYERS: 'LIDAR_Composite_DTM_1m',
-  maxZoom: 18,
+  LAYERS: 'Lidar_Composite_Hillshade_DTM_1m',
+  maxZoom: 19,
+  maxNativeZoom: 17,
   opacity: 0.6,
   attr: '© Environment Agency — OGL v3.0'
 });

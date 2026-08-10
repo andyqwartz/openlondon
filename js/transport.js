@@ -16,27 +16,31 @@ OL.Transport._readCache = function(mode) {
 };
 
 OL.Transport._writeCache = function(mode, stops) {
-  try {
-    localStorage.setItem('ol_transport_' + mode, JSON.stringify({ ttl: Date.now(), stops: stops }));
-  } catch (e) {  }
+  try { localStorage.setItem('ol_transport_' + mode, JSON.stringify({ ttl: Date.now(), stops: stops })); }
+  catch (e) {  }
 };
 
 OL.Transport.purgeOldCache = function() {
   try {
-    var old = ['ol_transport_metro', 'ol_transport_taxi', 'ol_transport_bus',
-               'ol_transport_rail', 'ol_transport_dlr', 'ol_transport_overground',
-               'ol_transport_elizabeth', 'ol_transport_tram'];
+    var old = ['ol_transport_metro', 'ol_transport_taxi', 'ol_transport_bus', 'ol_transport_busline',
+               'ol_transport_rail', 'ol_transport_dlr', 'ol_transport_overground', 'ol_transport_elizabeth', 'ol_transport_tram'];
     old.forEach(function(k) { localStorage.removeItem(k); });
   } catch (e) {  }
+};
+
+OL.Transport._extractStops = function(json) {
+  if (Array.isArray(json)) return json;
+  if (json && Array.isArray(json.stopPoints)) return json.stopPoints;
+  return [];
 };
 
 OL.Transport.load = function(modeKey) {
   var def = OL.TRANSPORT_TYPES[modeKey];
   if (!def || !OL.map) return;
+  if (modeKey === 'bus') { OL.Transport._loadBusRoute(); return; }
 
   var cached = OL.Transport._readCache(modeKey);
   if (cached) { OL.Transport._render(modeKey, cached); return; }
-
   if (OL.Transport._loading[modeKey]) return;
 
   var url = OL.API.BASE + '/StopPoint/Mode/' + encodeURIComponent(def.mode);
@@ -56,13 +60,41 @@ OL.Transport.load = function(modeKey) {
         OL.Transport._render(modeKey, stale || []);
         return;
       }
-      var list = Array.isArray(json) ? json : [];
+      var list = OL.Transport._extractStops(json);
       OL.Transport._render(modeKey, list);
       OL.Transport._writeCache(modeKey, list);
     });
 };
 
-OL.Transport._render = function(modeKey, stops) {
+OL.Transport._loadBusRoute = function() {
+  var route = (document.getElementById('busRouteInput') || {}).value;
+  if (!route || !route.trim()) return;
+  route = route.trim();
+  var cacheKey = 'busline_' + route;
+  var cached = OL.Transport._readCache(cacheKey);
+  if (cached) { OL.Transport._render('bus', cached, route); return; }
+  if (OL.Transport._loading[cacheKey]) return;
+
+  var url = OL.API.BASE + OL.API.LINE_STOPS + encodeURIComponent(route) + '/stoppoints';
+  OL.Transport._loading[cacheKey] = true;
+
+  OL.Net.enqueue('stp_' + cacheKey,
+    function() {
+      return fetch(url).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      });
+    },
+    function(json, err) {
+      OL.Transport._loading[cacheKey] = false;
+      if (err) { return; }
+      var list = OL.Transport._extractStops(json);
+      OL.Transport._render('bus', list, route);
+      OL.Transport._writeCache(cacheKey, list);
+    });
+};
+
+OL.Transport._render = function(modeKey, stops, routeLabel) {
   var def = OL.TRANSPORT_TYPES[modeKey];
   OL.Transport._remove(modeKey);
 
@@ -84,7 +116,19 @@ OL.Transport._render = function(modeKey, stops) {
   });
 
   OL.Transport.groups[modeKey] = layer;
+  OL.Transport._updateBusLabel(routeLabel);
   if (OL.Transport.visiblePhys[modeKey] && OL.map) layer.addTo(OL.map);
+};
+
+OL.Transport._updateBusLabel = function(routeLabel) {
+  var lbl = document.getElementById('busRouteLabel');
+  if (!lbl) return;
+  if (routeLabel) {
+    lbl.textContent = 'Bus ' + routeLabel;
+    lbl.style.display = '';
+  } else {
+    lbl.style.display = 'none';
+  }
 };
 
 OL.Transport._remove = function(modeKey) {
@@ -105,6 +149,7 @@ OL.Transport.toggle = function(modeKey, show) {
     OL.Transport.load(modeKey);
   } else {
     OL.Transport._remove(modeKey);
+    OL.Transport._updateBusLabel(null);
   }
 };
 

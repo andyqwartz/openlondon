@@ -27,8 +27,11 @@ OL.switchBase = function(key) {
     OL.baseLayer = L.tileLayer.wms(OL.LIDAR_GB.WMS, {
       layers: OL.LIDAR_GB.LAYERS,
       format: 'image/png',
-      transparent: false,
+      transparent: true,
+      version: '1.3.0',
+      crs: L.CRS.EPSG3857,
       maxZoom: OL.LIDAR_GB.maxZoom,
+      maxNativeZoom: OL.LIDAR_GB.maxNativeZoom,
       opacity: OL.LIDAR_GB.opacity,
       attribution: OL.LIDAR_GB.attr
     }).addTo(OL.map);
