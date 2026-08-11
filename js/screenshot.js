@@ -45,9 +45,10 @@ OL.Screenshot.capture = function() {
     canvas.toBlob(function(blob) {
       if (!blob) return;
       var url = URL.createObjectURL(blob);
+      var c = OL.map.getCenter();
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'openlondon.png';
+      a.download = 'OpenLondon_' + (OL.baseKey || 'osm') + '_' + c.lat.toFixed(4) + '_' + c.lng.toFixed(4) + '.png';
       document.body.appendChild(a);
       a.click();
       setTimeout(function() {
