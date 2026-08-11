@@ -6,8 +6,8 @@
   --text: #d0d7de;
   --text2: #8b97a5;
   --text3: #5b6773;
-  --accent: #e0433a;
-  --accent-dim: rgba(224,67,58,.14);
+  --accent: rgb(102, 58, 224);
+  --accent-dim: rgba(102,58,224,.14);
   --radius: 4px;
   --font: 'Inter', -apple-system, sans-serif;
   --shadow: 0 1px 4px rgba(0,0,0,.5);
