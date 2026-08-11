@@ -11,9 +11,65 @@ OL.Screenshot.init = function() {
   document.head.appendChild(s);
 };
 
+OL.Screenshot._captureScreen = function() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    console.warn('[Screenshot] Screen capture not supported');
+    return;
+  }
+  navigator.mediaDevices.getDisplayMedia({ video: true, preferCurrentTab: true })
+    .then(function(stream) {
+      var track = stream.getVideoTracks()[0];
+      var video = document.createElement('video');
+      video.muted = true;
+      video.playsInline = true;
+      video.srcObject = stream;
+      video.onloadeddata = function() {
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            var s = (track && track.getSettings) ? track.getSettings() : {};
+            var w = s.width || video.videoWidth || 1280;
+            var h = s.height || video.videoHeight || 720;
+            var canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(video, 0, 0, w, h);
+            stream.getTracks().forEach(function(t) { t.stop(); });
+            canvas.toBlob(function(blob) {
+              if (!blob) return;
+              var url = URL.createObjectURL(blob);
+              var c = OL.map.getCenter();
+              var a = document.createElement('a');
+              a.href = url;
+              a.download = 'OpenLondon_' + (OL.baseKey || 'osm') + '_' +
+                c.lat.toFixed(4) + '_' + c.lng.toFixed(4) + '_cam.png';
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(function() {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }, 100);
+            });
+          });
+        });
+      };
+      video.onerror = function() {
+        stream.getTracks().forEach(function(t) { t.stop(); });
+      };
+      video.play();
+    })
+    .catch(function(err) {
+      console.warn('[Screenshot] screen capture cancelled/failed:', (err && err.name) || err);
+    });
+};
+
 OL.Screenshot.capture = function() {
   if (!OL.Screenshot._loaded) {
     alert('Capture in progress, please retry.');
+    return;
+  }
+  // Popup caméra ouverte → capture d'écran de l'onglet (inclut l'image/vidéo caméra)
+  if (document.querySelector('.leaflet-popup-content .cam-pop')) {
+    OL.Screenshot._captureScreen();
     return;
   }
   var container = OL.map.getContainer();
