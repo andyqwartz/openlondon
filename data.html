@@ -8,42 +8,43 @@
 </head>
 <body>
 <main>
-  <h1>OpenLondon — Sources & data</h1>
-  <p class="meta">Last updated: August 2026.</p>
-  <p>London mobility viewer, 100% client-side, no account, no key. All data comes from public APIs with per-provider attribution.</p>
+  <h1>Sources &amp; data</h1>
+  <p class="meta">OpenLondon — Last updated: August 2026 · Language: English.</p>
 
-  <h2>Traffic cameras</h2>
-  <ul>
-    <li>Endpoint: <code>GET api.tfl.gov.uk/Place/Type/JamCam</code> (~882 cameras)</li>
-    <li>Media: <code>s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/{id}.jpg|.mp4</code></li>
-    <li>Data © <a href="https://tfl.gov.uk/info-for/open-data-users/" target="_blank" rel="noopener">Transport for London</a> (Open Data)</li>
-  </ul>
+  <p>OpenLondon is a live London mobility viewer, 100% client-side, no account, no API key. The app is an <strong>aggregator of public data</strong>: it does not host, own or modify the underlying datasets. Mobility, imagery and geocoding are fetched live from the public services listed below. Each licence sets how that source may be used and attributed; where a source requires a credit line, it is shown in the map's attribution control and reproduced here.</p>
 
-  <h2>Incidents / disruptions</h2>
-  <ul>
-    <li>Endpoint: <code>GET api.tfl.gov.uk/Road/All/Disruption</code> (~106)</li>
-    <li>Coloured by severity: Minor / Moderate / Severe / Closure</li>
-  </ul>
+  <h2>Mobility data (Transport for London)</h2>
+  <table>
+    <tr><th>Dataset</th><th>Endpoint</th><th>Description</th></tr>
+    <tr><td>Traffic cameras</td><td><code>/Place/Type/JamCam</code></td><td>~882 cameras, image &amp; video, on demand</td></tr>
+    <tr><td>Incidents / disruptions</td><td><code>/Road/All/Disruption</code></td><td>~106 disruptions, colour-coded by severity</td></tr>
+    <tr><td>Transport stops</td><td><code>/StopPoint/Mode/{mode}</code></td><td>Tube, National Rail, DLR, Overground, Elizabeth line, Tram, Bus — one call per network, cached 24 h</td></tr>
+    <tr><td>Search</td><td><code>/StopPoint/Search?query=</code></td><td>Stations &amp; places</td></tr>
+  </table>
+  <p>Mobility data © <a href="https://tfl.gov.uk/info-for/open-data-users/" target="_blank" rel="noopener">Transport for London</a> (TfL Open Data). TfL's published data is made available under the <a href="https://tfl.gov.uk/info-for/open-data-users/our-open-data" target="_blank" rel="noopener">TfL Open Data terms</a>. Camera media is served directly from TfL's public image host (<code>s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk</code>).</p>
 
-  <h2>Transport</h2>
-  <ul>
-    <li>Endpoints: <code>GET api.tfl.gov.uk/StopPoint/Mode/{tube|national-rail|dlr|overground|elizabeth-line|tram|bus}</code></li>
-    <li>One call per network, cached for 24 h (respects TfL rate limits).</li>
-  </ul>
-
-  <h2>Map data</h2>
-  <ul>
-    <li>OpenStreetMap © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM contributors</a> (ODbL)</li>
-    <li>Google Satellite / Hybrid © Google</li>
-    <li>Esri World Imagery © Esri, Maxar, Earthstar Geographics</li>
-    <li>CARTO basemaps © OpenStreetMap contributors © CARTO</li>
-    <li>Great-Britain relief (DTM) — <a href="https://environment.data.gov.uk/" target="_blank" rel="noopener">Environment Agency</a>, WMS <code>lidar-composite-digital-terrain-model-dtm-1m</code>, OGL v3.0. Source: Environment Agency — updated 2026.</li>
-  </ul>
+  <h2>Map data &amp; basemaps</h2>
+  <table>
+    <tr><th>Layer</th><th>Provider</th><th>Licence</th></tr>
+    <tr><td>OpenStreetMap</td><td>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM contributors</a></td><td><a href="https://opendatacommons.org/licenses/odbl/" target="_blank" rel="noopener">ODbL</a></td></tr>
+    <tr><td>Satellite / Hybrid</td><td>Google</td><td>Google Maps/Imagery <a href="https://www.google.com/permissions/geoguidelines/" target="_blank" rel="noopener">terms</a></td></tr>
+    <tr><td>World Imagery</td><td>Esri, Maxar, Earthstar Geographics</td><td>Esri <a href="https://www.esri.com/en-us/legal/terms" target="_blank" rel="noopener">terms</a></td></tr>
+    <tr><td>Dark / Light</td><td>CARTO © OSM contributors</td><td>ODbL + <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO attribution</a></td></tr>
+    <tr><td>Great-Britain relief (DTM)</td><td><a href="https://environment.data.gov.uk/" target="_blank" rel="noopener">Environment Agency</a> — <code>lidar-composite-digital-terrain-model-dtm-1m</code></td><td><a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">OGL v3.0</a></td></tr>
+  </table>
 
   <h2>Geocoding</h2>
   <ul>
-    <li>TfL search: <code>GET api.tfl.gov.uk/StopPoint/Search?query=</code></li>
-    <li>OSM/Nominatim (London-bounded) — © OpenStreetMap contributors (ODbL)</li>
+    <li>TfL stop search: <code>/StopPoint/Search?query=</code> — © Transport for London (Open Data)</li>
+    <li>OSM/Nominatim (London-bounded) — © OpenStreetMap contributors (ODbL); used sparingly in accordance with the <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank" rel="noopener">Nominatim usage policy</a></li>
+  </ul>
+
+  <h2>Attribution &amp; licensing notes</h2>
+  <ul>
+    <li><strong>OSM / ODbL:</strong> attribution to OpenStreetMap contributors and a link to <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">openstreetmap.org/copyright</a> is kept visible on the map, as required by the OSM Foundation attribution guidelines.</li>
+    <li><strong>Environment Agency / OGL v3.0:</strong> credit "Contains Environment Agency information © Environment Agency and/or database right".</li>
+    <li><strong>TfL rate limits:</strong> the app loads each network once and caches it for 24 h to avoid overloading the public API.</li>
+    <li>The app never stores, redistributes or serves as an intermediary for these datasets; it only requests resources directly from the providers. Please respect each provider's fair-use and rate limits.</li>
   </ul>
 
   <p><a href="index.html">← Back to map</a></p>
