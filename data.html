@@ -9,33 +9,41 @@
 <body>
 <main>
   <h1>OpenLondon — Sources & data</h1>
-  <p>London mobility viewer, 100% client-side, no account, no key. All data comes from public APIs.</p>
+  <p class="meta">Last updated: August 2026.</p>
+  <p>London mobility viewer, 100% client-side, no account, no key. All data comes from public APIs with per-provider attribution.</p>
 
-  <h2>📷 TfL traffic cameras</h2>
+  <h2>Traffic cameras</h2>
   <ul>
     <li>Endpoint: <code>GET api.tfl.gov.uk/Place/Type/JamCam</code> (~882 cameras)</li>
     <li>Media: <code>s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/{id}.jpg|.mp4</code></li>
     <li>Data © <a href="https://tfl.gov.uk/info-for/open-data-users/" target="_blank" rel="noopener">Transport for London</a> (Open Data)</li>
   </ul>
 
-  <h2>⚠️ Incidents / disruptions</h2>
+  <h2>Incidents / disruptions</h2>
   <ul>
     <li>Endpoint: <code>GET api.tfl.gov.uk/Road/All/Disruption</code> (~106)</li>
     <li>Coloured by severity: Minor / Moderate / Severe / Closure</li>
   </ul>
 
-  <h2>🚇 Transport</h2>
+  <h2>Transport</h2>
   <ul>
     <li>Endpoints: <code>GET api.tfl.gov.uk/StopPoint/Mode/{tube|national-rail|dlr|overground|elizabeth-line|tram|bus}</code></li>
+    <li>One call per network, cached for 24 h (respects TfL rate limits).</li>
   </ul>
 
-  <h2>🗺 Map data</h2>
+  <h2>Map data</h2>
   <ul>
-    <li>OpenStreetMap © OSM contributors</li>
+    <li>OpenStreetMap © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM contributors</a> (ODbL)</li>
     <li>Google Satellite / Hybrid © Google</li>
-    <li>OpenLiDAR: DTM relief — <a href="https://environment.data.gov.uk/" target="_blank" rel="noopener">Environment Agency</a>, WMS <code>lidar-composite-digital-terrain-model-dtm-1m</code> (OGL v3.0)</li>
-    <li>Esri World Imagery © Esri, Maxar, Earthstar</li>
-    <li>CARTO basemaps © OpenStreetMap © CARTO</li>
+    <li>Esri World Imagery © Esri, Maxar, Earthstar Geographics</li>
+    <li>CARTO basemaps © OpenStreetMap contributors © CARTO</li>
+    <li>Great-Britain relief (DTM) — <a href="https://environment.data.gov.uk/" target="_blank" rel="noopener">Environment Agency</a>, WMS <code>lidar-composite-digital-terrain-model-dtm-1m</code>, OGL v3.0. Source: Environment Agency — updated 2026.</li>
+  </ul>
+
+  <h2>Geocoding</h2>
+  <ul>
+    <li>TfL search: <code>GET api.tfl.gov.uk/StopPoint/Search?query=</code></li>
+    <li>OSM/Nominatim (London-bounded) — © OpenStreetMap contributors (ODbL)</li>
   </ul>
 
   <p><a href="index.html">← Back to map</a></p>
