@@ -13,21 +13,26 @@ OL.Screenshot.init = function() {
 
 OL.Screenshot.capture = function() {
   if (!OL.Screenshot._loaded) {
-    alert('Capture en cours de chargement, reessayez.');
+    alert('Capture in progress, please retry.');
     return;
   }
   var container = OL.map.getContainer();
+  var zoom = container.querySelector('.leaflet-control-zoom');
+  var zoomDisplay = zoom ? zoom.style.display : '';
+  if (zoom) zoom.style.display = 'none';
+
+  function restore() {
+    if (zoom) zoom.style.display = zoomDisplay;
+  }
+
   html2canvas(container, {
     useCORS: true,
     allowTaint: false,
     backgroundColor: '#0e1116',
     scale: 2,
     onclone: function(doc) {
-
-      var imgs = doc.querySelectorAll('.cam-img');
-      for (var i = 0; i < imgs.length; i++) {
-        imgs[i].remove();
-      }
+      var z = doc.querySelector('.leaflet-control-zoom');
+      if (z) z.style.display = 'none';
 
       var all = doc.querySelectorAll('img');
       for (var j = 0; j < all.length; j++) {
@@ -36,6 +41,7 @@ OL.Screenshot.capture = function() {
       }
     }
   }).then(function(canvas) {
+    restore();
     canvas.toBlob(function(blob) {
       if (!blob) return;
       var url = URL.createObjectURL(blob);
@@ -50,6 +56,7 @@ OL.Screenshot.capture = function() {
       }, 100);
     });
   }).catch(function(err) {
+    restore();
     console.warn('[Screenshot] failed:', err);
   });
 };
